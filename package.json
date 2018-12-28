@@ -1,0 +1,17 @@
+{
+  "name": "cheepnet",
+  "version": "0.0.1",
+  "description": "a network representation of twitter user followers",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "pabloos",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "redis": "^2.8.0",
+    "twit": "^2.2.11",
+    "ws": "^6.1.2"
+  }
+}
