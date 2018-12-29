@@ -6,11 +6,9 @@ let svg = d3.select('body').append('svg')
   .attr('width', width)
   .attr('height', height)
   .style('background', 'grey')
-  .call(
-    d3.zoom().on('zoom', () => {
-      svg.attr('transform', d3.event.transform)
-    })
-  )
+  .call(d3.zoom().on('zoom', () => {
+    svg.attr('transform', d3.event.transform)
+  }))
 
 const color = d3.scaleOrdinal(d3.schemeCategory20)
 
@@ -40,30 +38,29 @@ d3.json('miserables.json', (error, graph) => {
   let circles = node.append('circle')
     .attr('r', 5)
     .attr('fill', (d) => color(d.group))
-    .call(
-      d3.drag()
-        .on('start', dragstarted)
-        .on('drag', dragged)
-        .on('end', dragended)
+    .call(d3.drag()
+      .on('start', dragstarted)
+      .on('drag', dragged)
+      .on('end', dragended)
     )
 
     .on('mouseover', (d) => {
-      // console.log(d.id)
+      console.log(d.id)
 
-      div.transition()
+     /*  div.transition()
         .duration(200)
-        .style('opacity', 0.9)
+        .style('opacity', 0.9) */
 
       div.html(getUserCard(d))
         .style('left', `${d3.event.pageX}px`)
         .style('top', `${d3.event.pageY - 28}px`)
     })
 
-    .on('mouseout', (d) => {
+    /* .on('mouseout', (d) => {
       div.transition()
         .duration(500)
         .style('opacity', 0)
-    })
+    }) */
 
   let lables = node.append('text')
     .text((d) => d.id)
@@ -89,3 +86,22 @@ d3.json('miserables.json', (error, graph) => {
     node.attr('transform', (d) => `translate(${d.x},${d.y})`)
   }
 })
+
+function dragstarted (d) {
+  if (!d3.event.active) simulation.alphaTarget(0.3).restart()
+
+  d.fx = d.x
+  d.fy = d.y
+}
+
+function dragged (d) {
+  d.fx = d3.event.x
+  d.fy = d3.event.y
+}
+
+function dragended (d) {
+  if (!d3.event.active) simulation.alphaTarget(0)
+
+  d.fx = null
+  d.fy = null
+}

@@ -79,9 +79,9 @@ function getFollowers (username, cursor = -1, cache, ws) { // -1 as default for 
 
   app.use(express.static('public'))
 
-  app.get('/getFollowers/:id', (req, res) => {
-    wss.on('connection', (ws) => {
-      getFollowers(req.params.id, -1, cache, ws)
+  wss.on('connection', (ws) => {
+    ws.on('message', (message) => {
+      getFollowers(message, -1, cache, ws)
     })
   })
 
