@@ -7,8 +7,6 @@ const WebSocket = require('ws')
 
 const wss = new WebSocket.Server({ port: 8080 })
 
-// const Cache = require('./cache.js')
-
 const webport = 80
 
 var twitterClient = new Twit(
@@ -22,9 +20,11 @@ var twitterClient = new Twit(
   }
 )
 
-function getFollowers (username, cursor = -1, cache, ws) { // -1 as default for open the first page
+function getFollowers (username, cursor = -1, cache, ws) { // -1 as default for open the first page  
   twitterClient.get('followers/ids', { screen_name: username, count: 5000, cursor: cursor }, (err, data) => {
     if (err) throw err
+
+    ws.send(data.ids.length)
 
     data.ids.forEach((followerId) => {
       cache.sismember('followers', followerId, (error, result) => {
@@ -34,21 +34,18 @@ function getFollowers (username, cursor = -1, cache, ws) { // -1 as default for 
           cache.get(followerId, (error, userObject) => { // get the user object from the cache
             if (error) throw error
 
-            // console.log('obteniendo de la cache ' + followerId)
-
-            ws.send(JSON.stringify(userObject))
+            ws.send(userObject) // we will parse in client
           })
         } else {
           twitterClient.get('users/show', { user_id: followerId }, (error, userObject) => { // get the userobject from the API
             if (error) {
               if (error.code === 50) { // error.message: User not found.
                 console.log('Usuario: ' + followerId + ' no encontrado')
+                ws.send(-1)
               } else {
                 throw error
               }
             } else {
-              // console.log('obteniendo de la api ' + followerId)
-
               cache.sadd('followers', followerId)
               cache.set(followerId, JSON.stringify(userObject))
 
@@ -66,14 +63,6 @@ function getFollowers (username, cursor = -1, cache, ws) { // -1 as default for 
 }
 
 (async () => {
-  /*  let cache = new Cache(redis.createClient(6379, 'cache.cheepnet.com'))
-
-  cache.client.on('connect', () => {
-    cache.saveFollowerID('000000')
-
-    if (cache.existID('000000')) console.log('id exists')
-  }) */
-
   const app = express()
   const cache = redis.createClient(6379, 'cache.cheepnet.com')
 

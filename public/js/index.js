@@ -1,4 +1,4 @@
-let div = d3.select('body').append('div')
+/* let div = d3.select('body').append('div')
   .attr('class', 'tooltip')
   .style('opacity', 0)
 
@@ -89,3 +89,4 @@ d3.json('miserables.json', (error, graph) => {
     node.attr('transform', (d) => `translate(${d.x},${d.y})`)
   }
 })
+ */
