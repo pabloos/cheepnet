@@ -67,8 +67,8 @@ function newGraph (data, numFollowers) {
 
   let lables = node.append('text')
     .text((d) => d.name)
-    .attr('x', 6)
-    .attr('y', 3)
+    .attr('x', -30)
+    .attr('y', 15)
 
   node.append('title').text((d) => d.name)
 

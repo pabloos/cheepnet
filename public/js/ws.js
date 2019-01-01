@@ -22,12 +22,28 @@ ws.onmessage = (message) => {
 
     let data = JSON.parse(message.data)
 
-    data.id = data.name
-
-    console.log(data)
+    data.id = data.screen_name
 
     gnodes.push(data)
-    glinks.push({ source: textInput.value, target: data.name, value: Math.random() })
+
+    // console.log(data)
+
+    // console.log(textInput.value)
+    // console.log(data.screen_name)
+
+    // console.log(numFollowers)
+    // console.log(numFollowersLeft)
+
+    if (textInput.value !== data.screen_name) {
+      glinks.push({
+        source: textInput.value,
+        target: data.screen_name,
+        value: Math.random()
+      })
+    } else {
+      numFollowers--
+      console.log('ha llegado el usuariow')
+    }
 
     if (numFollowers === numFollowersLeft) {
       const finalGraph = {

@@ -21,6 +21,14 @@ var twitterClient = new Twit(
 )
 
 function getFollowers (username, cursor = -1, cache, ws) { // -1 as default for open the first page  
+  twitterClient.get('users/show', { screen_name: username }, (err, user) => {
+    if (err) throw err
+
+    // console.log(user)
+
+    ws.send(JSON.stringify(user))
+  })
+
   twitterClient.get('followers/ids', { screen_name: username, count: 5000, cursor: cursor }, (err, data) => {
     if (err) throw err
 
