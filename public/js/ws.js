@@ -9,50 +9,44 @@ var glinks = []
 var numFollowersLeft = 99999999999
 var numFollowers = 0
 
-ws.onmessage = (message) => {
-  if (!isNaN(message.data)) {
-    if (message.data < 0) {
-      numFollowersLeft--
-    } else {
-      console.log('llego el numero')
-      numFollowersLeft = message.data
-    }
-  } else {
+ws.onmessage = (WSmessage) => {
+  const message = JSON.parse(WSmessage.data)
+
+  if (message.type === 'followersNumber') { // the followers number has arrived
+    numFollowersLeft = message.body
+  } else if (message.type === 'count') { // a number has arrived
+    numFollowers++
+  } else if (message.type === 'twitterUser') {
+    let us = JSON.parse(message.body)
+
+    us.id = us.screen_name
+
+    gnodes.push(us)
+  } else if (message.type === 'user') { // a user has arrived
+    message.body.id = message.body.screen_name
+
+    gnodes.push(message.body)
+
     numFollowers++
 
-    let data = JSON.parse(message.data)
+    glinks.push({
+      source: textInput.value,
+      target: message.body.screen_name,
+      value: Math.random()
+    })
 
-    data.id = data.screen_name
+    console.log(message)
 
-    gnodes.push(data)
+    console.log(message.body.screen_name)
+  }
 
-    // console.log(data)
-
-    // console.log(textInput.value)
-    // console.log(data.screen_name)
-
-    // console.log(numFollowers)
-    // console.log(numFollowersLeft)
-
-    if (textInput.value !== data.screen_name) {
-      glinks.push({
-        source: textInput.value,
-        target: data.screen_name,
-        value: Math.random()
-      })
-    } else {
-      numFollowers--
-      console.log('ha llegado el usuariow')
+  if (numFollowers === numFollowersLeft) { // is the graph completed?
+    const finalGraph = {
+      nodes: gnodes,
+      links: glinks
     }
 
-    if (numFollowers === numFollowersLeft) {
-      const finalGraph = {
-        nodes: gnodes,
-        links: glinks
-      }
-
-      newGraph(finalGraph, numFollowers)
-    }
+    newGraph(finalGraph, numFollowers)
   }
 }
 

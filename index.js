@@ -9,55 +9,81 @@ const wss = new WebSocket.Server({ port: 8080 })
 
 const webport = 80
 
-var twitterClient = new Twit(
+const twitterClient = new Twit(
   {
-    consumer_key: 'JXsD8Tcmy2e5QatKkPZIlSHL3',
-    consumer_secret: '92UKymLUR8AUsHOBJGvfZyOPkil7A9QA6484L5bGDg2hOmZgNv',
-    access_token: '2155770324-fsTnJRtolPYJiVcxuJLVz1KIceU1WdrkA0GV6Eq',
-    access_token_secret: '4inWdlosKJkHrfGxgBrjS7uS7Rd6oS07UYr2upPZUTemm',
+    consumer_key: process.env.CONSUMER_KEY,
+    consumer_secret: process.env.CONSUMER_SECRET,
+    access_token: process.env.ACCESS_TOKEN,
+    access_token_secret: process.env.ACCESS_TOKEN_SECRET,
     timeout_ms: 60 * 1000, // optional HTTP request timeout to apply to all requests.
     strictSSL: true // optional - requires SSL certificates to be valid.
   }
 )
 
-function getFollowers (username, cursor = -1, cache, ws) { // -1 as default for open the first page  
-  twitterClient.get('users/show', { screen_name: username }, (err, user) => {
-    if (err) throw err
+function getFollowers (username, cursor = -1, cache, ws) { // -1 as default for open the first page
+  twitterClient.get('users/show', { screen_name: username }, (error, user) => {
+    if (error) {
+      if (error.code === 88) { // 'Rate limit exceeded'
+        console.log('Se ha excedido el num de usuarios que se pueden obtener')
+      } else {
+        throw error
+      }
+    }
 
-    // console.log(user)
-
-    ws.send(JSON.stringify(user))
+    ws.send(JSON.stringify({
+      type: 'twitterUser',
+      body: JSON.stringify(user)
+    }))
   })
 
   twitterClient.get('followers/ids', { screen_name: username, count: 5000, cursor: cursor }, (err, data) => {
     if (err) throw err
 
-    ws.send(data.ids.length)
+    ws.send(JSON.stringify({
+      type: 'followersNumber',
+      body: data.ids.length
+    }))
 
     data.ids.forEach((followerId) => {
       cache.sismember('followers', followerId, (error, result) => {
         if (error) throw error
 
         if (result == '1') { // the user is cached
-          cache.get(followerId, (error, userObject) => { // get the user object from the cache
+          cache.get(followerId, (error, user) => { // get the user object from the cache
             if (error) throw error
 
-            ws.send(userObject) // we will parse in client
+            console.log('follower: ' + followerId + ' is cached')
+
+            ws.send(JSON.stringify({
+              type: 'user',
+              body: JSON.parse(user)
+            })) // we will parse in client
           })
-        } else {
+        } else { // the user is not cached
           twitterClient.get('users/show', { user_id: followerId }, (error, userObject) => { // get the userobject from the API
             if (error) {
-              if (error.code === 50) { // error.message: User not found.
+              if (error.code === 50) { // error.message: 'User not found'
                 console.log('Usuario: ' + followerId + ' no encontrado')
-                ws.send(-1)
+
+                ws.send(JSON.stringify({
+                  type: 'count',
+                  number: -1
+                }))
               } else {
-                throw error
+                if (error.code === 88) { // error.message: 'Rate limit exceeded'
+                  console.log('Se ha excedido el num de usuarios que se pueden obtener')
+                } else {
+                  console.log(error)
+                }
               }
             } else {
               cache.sadd('followers', followerId)
               cache.set(followerId, JSON.stringify(userObject))
 
-              ws.send(JSON.stringify(userObject))
+              ws.send(JSON.stringify({
+                type: 'user',
+                body: userObject
+              }))
             }
           })
         }
