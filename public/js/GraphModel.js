@@ -2,12 +2,13 @@ class GraphModel extends EventEmitter {
   constructor (nodes, links, username) {
     super()
 
-    this.twitterUser = username
-
-    this.nodes = nodes || []
-    this.links = links || []
+    [this.nodes = [], this.links = [], this.twitterUser = ''] = [nodes, links, username]
 
     this.linksCounter = 0
+  }
+
+  setUsername (username) { // defensive programing here
+    this.twitterUser = username
   }
 
   addNode (node) {
@@ -16,12 +17,6 @@ class GraphModel extends EventEmitter {
 
   addLink (link) {
     this.links.push(link)
-
-    /*     function sleep (ms) {
-      return new Promise(resolve => setTimeout(resolve, ms))
-    }
-
-    await sleep(300) */
   }
 
   addNumFollowers (numFollowers) {

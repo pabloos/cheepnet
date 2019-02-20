@@ -12,7 +12,7 @@ function getFollowers (username, cursor = -1, cache, ws, twitterClient) { // -1 
 
     ws.send(JSON.stringify({
       type: 'twitterUser',
-      body: JSON.stringify(user)
+      body: user
     }))
   })
 
