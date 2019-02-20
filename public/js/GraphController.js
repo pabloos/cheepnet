@@ -1,4 +1,4 @@
-class GraphController {
+export class GraphController {
   constructor (model, view, websocket) {
     [this.model, this.view, this.websocket] = [model, view, websocket]
 

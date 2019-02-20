@@ -1,3 +1,7 @@
+import { GraphModel } from './GraphModel.js'
+import { GraphView } from './GraphView.js'
+import { GraphController } from './GraphController.js'
+
 window.onload = () => {
   const WS_URL = 'ws://localhost:8080'
 

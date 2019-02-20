@@ -1,4 +1,8 @@
-class GraphModel extends EventEmitter {
+import { EventEmitter } from './eventEmitter.js'
+import { UserNode } from './userNode.js'
+import { Link } from './link.js'
+
+export class GraphModel extends EventEmitter {
   constructor (nodes, links, username) {
     super()
 

@@ -1,9 +1,11 @@
+import { EventEmitter } from './eventEmitter.js'
+
 const width = window.innerWidth
 const height = window.innerHeight
 
 var simulation
 
-class GraphView extends EventEmitter {
+export class GraphView extends EventEmitter {
   constructor (model, sendButton, textInput) {
     super()
 
