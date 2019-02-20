@@ -12,11 +12,11 @@ class GraphModel extends EventEmitter {
   }
 
   addNode (node) {
-    this.nodes.push(node)
+    this.nodes.push(new UserNode(node))
   }
 
-  addLink (link) {
-    this.links.push(link)
+  addLink (source, target) {
+    this.links.push(new Link(source, target))
   }
 
   addNumFollowers (numFollowers) {
@@ -24,9 +24,7 @@ class GraphModel extends EventEmitter {
   }
 
   sumCounter () {
-    this.linksCounter++
-
-    if (isGraphComplete(this.linksCounter, this.numFollowers)) this.emit('graphComplete')
+    if (isGraphComplete(++this.linksCounter, this.numFollowers)) this.emit('graphComplete')
   }
 }
 

@@ -17,11 +17,8 @@ class GraphController {
       'user': message => {
         this.model.addNode(message.body)
 
-        this.model.addLink({
-          source: this.model.twitterUser,
-          target: message.body.screen_name,
-          value: Math.random()
-        })
+        // in the follower of followers case we need to pass the follower origin as argument
+        this.model.addLink(this.model.twitterUser, message.body.screen_name)
 
         this.model.sumCounter()
       }
