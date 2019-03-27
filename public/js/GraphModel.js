@@ -11,8 +11,11 @@ export class GraphModel extends EventEmitter {
     this.linksCounter = 0
   }
 
-  setUsername (username) { // defensive programing here
-    this.twitterUser = username
+  /**
+   * @param {string} username
+   */
+  set username (username) { // defensive programing here
+    this.twitterUser = removeAroba(username)
   }
 
   addNode (node) {
@@ -34,4 +37,8 @@ export class GraphModel extends EventEmitter {
 
 function isGraphComplete (followersCount, totalFollowers) {
   return followersCount === totalFollowers
+}
+
+function removeAroba (name) {
+  return (name.charAt(0) === '@') ? name.substr(1) : name
 }

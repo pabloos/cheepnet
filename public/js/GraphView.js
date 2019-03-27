@@ -12,7 +12,7 @@ export class GraphView extends EventEmitter {
     this.model = model.on('graphComplete', () => this.buildGraph())
 
     sendButton.addEventListener('click', () => this.emit('sendButtonClicked'))
-    textInput.addEventListener('input', () => this.model.setUsername(textInput.value))
+    textInput.addEventListener('input', () => this.model.username = textInput.value)
 
     this.svg = d3.select('body').append('svg')
       .attr('width', width)

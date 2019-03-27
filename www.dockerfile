@@ -1,7 +1,8 @@
 FROM node:latest
 
-RUN mkdir -p /usr/src/cheepnet/
-WORKDIR /usr/src/cheepnet/
+ARG APP_DIR=/usr/src/cheepnet/
+
+WORKDIR ${APP_DIR}
 COPY . .
 
 RUN npm install
