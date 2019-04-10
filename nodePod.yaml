@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nodepod
+  labels: 
+    app: node 
+spec:
+  containers:
+  - name: node
+    image: alfredobs97/nodepod:v2
+    ports:
+    - containerPort: 80
+    - containerPort: 8080
+    envFrom:
+      - configMapRef:
+          name: env

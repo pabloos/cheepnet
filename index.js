@@ -23,7 +23,7 @@ const webport = 80;
 
 (async () => {
   const app = express()
-  const cache = redis.createClient(6379, 'cache.cheepnet.com')
+  const cache = redis.createClient(6379, 'redisservice')
 
   app.use(express.static('public'))
 
